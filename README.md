@@ -11,7 +11,7 @@ information inside `dist/assets/config.js` file.
 2) Copy to rename this file:
 
 ```
-cp src/assets/config_sample.js src/assets/config.js
+cp src/web/assets/config_sample.js src/web/assets/config.js
 ```
 
 3) Now start server & navigate to http://localhost:8080
