@@ -408,7 +408,7 @@ export default class ConnectLivekit
         break;
       case DisconnectReason.ROOM_DELETED:
         msg = i18n.t('notifications.room-disconnected-room-ended', {
-          code: 'Digis',
+          code: 'DigiKYC',
         });
         break;
       case DisconnectReason.STATE_MISMATCH:
