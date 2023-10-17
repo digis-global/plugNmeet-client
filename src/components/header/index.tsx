@@ -51,7 +51,6 @@ const Header = ({ currentRoom }: IHeaderProps) => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [alertText, setAlertText] = useState('');
   const [task, setTask] = useState('');
-  const assetPath = (window as any).STATIC_ASSETS_PATH ?? './assets';
 
   useEffect(() => {
     if (roomTitle) {
@@ -203,9 +202,6 @@ const Header = ({ currentRoom }: IHeaderProps) => {
         >
           <div
             className={`header-before-start absolute top-0 left-[-35px] w-[300px] pointer-events-none bg-cover bg-center h-full`}
-            style={{
-              backgroundImage: `url("${assetPath}/imgs/header-before2.png")`,
-            }}
           />
           <div className="logo w-28 relative z-20">
             <HeaderLogo />
@@ -248,9 +244,6 @@ const Header = ({ currentRoom }: IHeaderProps) => {
           </div>
           <div
             className={`header-before-end absolute top-0 right-[-100px] w-[350px] lg:w-[380px] rotate-[156deg] pointer-events-none bg-cover bg-center h-full`}
-            style={{
-              backgroundImage: `url("${assetPath}/imgs/header-before2.png")`,
-            }}
           />
           {showModal ? alertModal() : null}
         </header>

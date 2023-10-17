@@ -1,4 +1,4 @@
-window.PLUG_N_MEET_SERVER_URL = 'http://localhost:8080';
+window.PLUG_N_MEET_SERVER_URL = 'https://dev-dkyc.digis.lk';
 
 // this is helpful for external plugin development where images or other files located
 // in other place.
@@ -34,18 +34,11 @@ window.STOP_MIC_TRACK_ON_MUTE = true;
 
 // Design customization
 // in json format
-// window.DESIGN_CUSTOMIZATION = `{
-//   "primary_color": "#004D90",
-//   "secondary_color": "#24AEF7",
-//   "background_color": "#0b7db4",
-//   "background_image": "https:\/\/mydomain.com\/custom_bg.png",
-//   "header_bg_color": "#45b3ec",
-//   "footer_bg_color": "#45b3ec",
-//   "left_side_bg_color": "#04a2f3",
-//   "right_side_bg_color": "#04a2f3",
-//   "custom_css_url": "https:\/\/mydomain.com\/plugNmeet_desing.css",
-//   "custom_logo": "https:\/\/mydomain.com\/logo.png"
-// }`;
+window.DESIGN_CUSTOMIZATION = `{
+  "background_color": "#F9F9F9",
+  "left_side_bg_color": "#FFFFFF",
+  "right_side_bg_color": "#FFFFFF",
+}`;
 
 // Whiteboard PreloadedLibraryItems which should an array of full library direct URL
 // You can get items from here: https://libraries.excalidraw.com
