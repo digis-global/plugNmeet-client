@@ -32,26 +32,26 @@ import {
   AnalyticsEventType,
   AnalyticsStatus,
 } from '../../../helpers/proto/plugnmeet_analytics_pb';
+import { getAudioPreset } from '../../../helpers/utils';
 
 interface IMicrophoneIconProps {
   currentRoom: Room;
 }
 const isActiveMicrophoneSelector = createSelector(
-  (state: RootState) => state.bottomIconsActivity.isActiveMicrophone,
-  (isActiveMicrophone) => isActiveMicrophone,
+  (state: RootState) => state.bottomIconsActivity,
+  (bottomIconsActivity) => bottomIconsActivity.isActiveMicrophone,
 );
 const showMicrophoneModalSelector = createSelector(
-  (state: RootState) => state.bottomIconsActivity.showMicrophoneModal,
-  (showMicrophoneModal) => showMicrophoneModal,
+  (state: RootState) => state.bottomIconsActivity,
+  (bottomIconsActivity) => bottomIconsActivity.showMicrophoneModal,
 );
 const isMicLockSelector = createSelector(
-  (state: RootState) =>
-    state.session.currentUser?.metadata?.lock_settings.lock_microphone,
-  (lock_microphone) => lock_microphone,
+  (state: RootState) => state.session.currentUser?.metadata?.lock_settings,
+  (lock_settings) => lock_settings?.lock_microphone,
 );
 const isMicMutedSelector = createSelector(
-  (state: RootState) => state.bottomIconsActivity.isMicMuted,
-  (isMicMuted) => isMicMuted,
+  (state: RootState) => state.bottomIconsActivity,
+  (bottomIconsActivity) => bottomIconsActivity.isMicMuted,
 );
 
 const MicrophoneIcon = ({ currentRoom }: IMicrophoneIconProps) => {
@@ -239,7 +239,9 @@ const MicrophoneIcon = ({ currentRoom }: IMicrophoneIconProps) => {
     for (let i = 0; i < localTracks.length; i++) {
       const track = localTracks[i];
       if (track.kind === Track.Kind.Audio) {
-        await currentRoom?.localParticipant.publishTrack(track);
+        await currentRoom?.localParticipant.publishTrack(track, {
+          audioPreset: getAudioPreset(),
+        });
         dispatch(updateIsActiveMicrophone(true));
       }
     }
@@ -279,12 +281,14 @@ const MicrophoneIcon = ({ currentRoom }: IMicrophoneIconProps) => {
         />
       ) : null}
       <div
-        className={`microphone footer-icon relative h-[35px] lg:h-[40px] w-[35px] lg:w-[40px] rounded-full bg-[#F2F2F2] dark:bg-darkSecondary2 hover:bg-[#ECF4FF] mr-3 lg:mr-6 flex items-center justify-center cursor-pointer ${
+        className={`microphone footer-icon relative h-[35px] lg:h-[40px] w-[35px] lg:w-[40px] rounded-full bg-[#F2F2F2] dark:bg-darkSecondary2 hover:bg-[#ECF4FF] ltr:mr-3 lg:ltr:mr-6 flex items-center justify-center cursor-pointer ${
           showTooltip ? 'has-tooltip' : ''
         }`}
         onClick={() => manageMic()}
       >
-        <span className="tooltip">{getTooltipText()}</span>
+        <span className="tooltip rtl:-left-3 rtl:microphone-rtl-left">
+          {getTooltipText()}
+        </span>
 
         {!isActiveMicrophone ? (
           <>

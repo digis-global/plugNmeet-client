@@ -16,16 +16,16 @@ interface IMicMenuItemsProps {
 }
 
 const audioDevicesSelector = createSelector(
-  (state: RootState) => state.roomSettings.audioDevices,
-  (audioDevices) => audioDevices,
+  (state: RootState) => state.roomSettings,
+  (roomSettings) => roomSettings.audioDevices,
 );
 const isMicMutedSelector = createSelector(
-  (state: RootState) => state.bottomIconsActivity.isMicMuted,
-  (isMicMuted) => isMicMuted,
+  (state: RootState) => state.bottomIconsActivity,
+  (bottomIconsActivity) => bottomIconsActivity.isMicMuted,
 );
 const selectedAudioDeviceSelector = createSelector(
-  (state: RootState) => state.roomSettings.selectedAudioDevice,
-  (selectedAudioDevice) => selectedAudioDevice,
+  (state: RootState) => state.roomSettings,
+  (roomSettings) => roomSettings.selectedAudioDevice,
 );
 
 const MicMenuItems = ({ currentRoom }: IMicMenuItemsProps) => {
@@ -105,7 +105,7 @@ const MicMenuItems = ({ currentRoom }: IMicMenuItemsProps) => {
     return (
       <Menu.Items
         static
-        className="origin-bottom-right z-[9999] absolute left-0 mt-2 w-40 bottom-[40px] rounded-md shadow-lg bg-white dark:bg-darkPrimary ring-1 ring-black dark:ring-secondaryColor ring-opacity-5 divide-y divide-gray-100 dark:divide-secondaryColor focus:outline-none"
+        className="origin-bottom-right z-[9999] absolute ltr:left-0 rtl:-left-4 mt-2 w-40 bottom-[40px] rounded-md shadow-lg bg-white dark:bg-darkPrimary ring-1 ring-black dark:ring-secondaryColor ring-opacity-5 divide-y divide-gray-100 dark:divide-secondaryColor focus:outline-none"
       >
         {devicesMenu}
         <div className="" role="none">

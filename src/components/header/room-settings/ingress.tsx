@@ -13,9 +13,8 @@ import { RootState, store, useAppSelector } from '../../../store';
 import sendAPIRequest from '../../../helpers/api/plugNmeetAPI';
 
 const ingressFeaturesSelector = createSelector(
-  (state: RootState) =>
-    state.session.currentRoom?.metadata?.room_features.ingress_features,
-  (ingress_features) => ingress_features,
+  (state: RootState) => state.session.currentRoom?.metadata?.room_features,
+  (room_features) => room_features?.ingress_features,
 );
 
 const Ingress = () => {
@@ -70,7 +69,10 @@ const Ingress = () => {
       <>
         <form method="POST" onSubmit={(e) => onSubmit(e)}>
           <div className="flex items-center justify-between mb-2">
-            <label htmlFor="quality" className="pr-4 w-full dark:text-darkText">
+            <label
+              htmlFor="quality"
+              className="pr-4 w-full dark:text-darkText ltr:text-left rtl:text-right"
+            >
               {t('ingress-features.ingress-type')}
             </label>
             <select
@@ -91,7 +93,7 @@ const Ingress = () => {
           <div className="flex items-center justify-between mb-2">
             <label
               htmlFor="stream-key"
-              className="pr-4 w-full dark:text-darkText"
+              className="pr-4 w-full dark:text-darkText ltr:text-left rtl:text-right"
             >
               {t('ingress-features.join-as-name')}
             </label>

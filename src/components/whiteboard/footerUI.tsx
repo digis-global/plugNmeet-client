@@ -22,16 +22,16 @@ interface IFooterUIProps {
   isPresenter: boolean;
 }
 const totalPagesSelector = createSelector(
-  (state: RootState) => state.whiteboard.totalPages,
-  (totalPages) => totalPages,
+  (state: RootState) => state.whiteboard,
+  (whiteboard) => whiteboard.totalPages,
 );
 const currentPageSelector = createSelector(
-  (state: RootState) => state.whiteboard.currentPage,
-  (currentPage) => currentPage,
+  (state: RootState) => state.whiteboard,
+  (whiteboard) => whiteboard.currentPage,
 );
 const currentWhiteboardOfficeFileIdSelector = createSelector(
-  (state: RootState) => state.whiteboard.currentWhiteboardOfficeFileId,
-  (currentWhiteboardOfficeFileId) => currentWhiteboardOfficeFileId,
+  (state: RootState) => state.whiteboard,
+  (whiteboard) => whiteboard.currentWhiteboardOfficeFileId,
 );
 
 const FooterUI = ({ excalidrawAPI, isPresenter }: IFooterUIProps) => {
@@ -147,7 +147,7 @@ const FooterUI = ({ excalidrawAPI, isPresenter }: IFooterUIProps) => {
           onClick={handlePre}
           disabled={disablePre}
         >
-          <i className="pnm-arrow-left-short text-black dark:text-white text-xl opacity-50" />
+          <i className="pnm-arrow-left-short text-black dark:text-white text-xl opacity-50 rtl:rotate-180" />
         </button>
         <select
           id="pages"
@@ -163,7 +163,7 @@ const FooterUI = ({ excalidrawAPI, isPresenter }: IFooterUIProps) => {
           onClick={handleNext}
           disabled={disableNext}
         >
-          <i className="pnm-arrow-right-short text-black dark:text-white text-xl opacity-50" />
+          <i className="pnm-arrow-right-short text-black dark:text-white text-xl opacity-50 rtl:rotate-180" />
         </button>
       </div>
     );
@@ -201,12 +201,14 @@ const FooterUI = ({ excalidrawAPI, isPresenter }: IFooterUIProps) => {
     return (
       <div
         className={`flex text-sm items-center justify-start md:justify-center relative ${
-          isAdmin && !isRecorder ? 'pl-3 md:pl-12' : 'pl-3'
+          isAdmin && !isRecorder
+            ? 'ltr:pl-3 rtl:pr-3 md:pl-12  md:rtl:pr-4'
+            : 'ltr:pl-3 rtl:pr-3'
         } `}
       >
         {isAdmin && !isRecorder ? (
           <button
-            className="w-8 h-8 rounded-lg border border-solid border-[#3d3d3d] text-[#3d3d3d] dark:text-[#b8b8b8] dark:bg-[#262627] dark:hover:bg-[#3d3d3d] hover:bg-[#3d3d3d] hover:text-[#b8b8b8] flex items-center justify-center absolute right-4 md:left-2 top-1/2 -translate-y-1/2"
+            className="w-8 h-8 rounded-lg border border-solid border-[#3d3d3d] text-[#3d3d3d] dark:text-[#b8b8b8] dark:bg-[#262627] dark:hover:bg-[#3d3d3d] hover:bg-[#3d3d3d] hover:text-[#b8b8b8] flex items-center justify-center ltr:mr-2 rtl:ml-2"
             onClick={takeOverPresenter}
           >
             <i className="pnm-presenter text-[14px]" />

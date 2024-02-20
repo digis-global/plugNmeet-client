@@ -7,18 +7,23 @@ import {
   SpeechRecognizer,
   TranslationRecognizer,
 } from 'microsoft-cognitiveservices-speech-sdk';
-import { Room, Track } from 'livekit-client';
+import {
+  ParticipantEvent,
+  Room,
+  Track,
+  TrackPublication,
+} from 'livekit-client';
 
 import SubtitleArea from './subtitleArea';
-import { RootState, useAppDispatch, useAppSelector } from '../../store';
+import { RootState, store, useAppDispatch, useAppSelector } from '../../store';
 
 import {
   getAzureToken,
   openConnectionWithAzure,
+  renewAzureToken,
 } from './helpers/apiConnections';
-import { updateAzureTokenInfo } from '../../store/slices/roomSettingsSlice';
-import SelectOptions from './selectOptions';
-import { OnCloseSelectedOptions } from './selectOptions';
+import { cleanAzureToken } from '../../store/slices/roomSettingsSlice';
+import SelectOptions, { OnCloseSelectedOptions } from './selectOptions';
 import { updateSelectedSubtitleLang } from '../../store/slices/speechServicesSlice';
 import SubtitleTextsHistory from './history';
 
@@ -27,15 +32,14 @@ interface SpeechToTextServiceProps {
 }
 
 const speechServiceFeaturesSelector = createSelector(
-  (state: RootState) =>
-    state.session.currentRoom.metadata?.room_features
-      .speech_to_text_translation_features,
-  (speech_to_text_translation_features) => speech_to_text_translation_features,
+  (state: RootState) => state.session.currentRoom.metadata?.room_features,
+  (room_features) => room_features?.speech_to_text_translation_features,
 );
 const azureTokenInfoSelector = createSelector(
-  (state: RootState) => state.roomSettings.azureTokenInfo,
-  (azureTokenInfo) => azureTokenInfo,
+  (state: RootState) => state.roomSettings,
+  (roomSettings) => roomSettings.azureTokenInfo,
 );
+const tokenRenewInterval = 8 * 60 * 1000;
 
 const SpeechToTextService = ({ currentRoom }: SpeechToTextServiceProps) => {
   const { t } = useTranslation();
@@ -48,12 +52,71 @@ const SpeechToTextService = ({ currentRoom }: SpeechToTextServiceProps) => {
     SpeechRecognizer | TranslationRecognizer | undefined
   >(undefined);
   const [deviceId, setDeviceId] = useState<string>('');
+  // this stream from livekit mic stream
   const [mediaStream, setMediaStream] = useState<MediaStream | undefined>(
     undefined,
   );
+  // this one we had created from either device id or stream
+  const [createdMediaStream, setCreatedMediaStream] = useState<
+    MediaStream | undefined
+  >(undefined);
   const [optionSelectionDisabled, setOptionSelectionDisabled] =
     useState<boolean>(false);
   const [isOpenPopover, setIsOpenPopover] = useState<boolean>(false);
+
+  // by default, we'll select the first language as default subtitle
+  useEffect(() => {
+    const selectedSubtitleLang =
+      store.getState().speechServices.selectedSubtitleLang;
+    if (isEmpty(selectedSubtitleLang)) {
+      const defaultSubtitleLang =
+        store.getState().session.currentRoom.metadata?.room_features
+          .speech_to_text_translation_features.default_subtitle_lang;
+      if (defaultSubtitleLang && !isEmpty(defaultSubtitleLang)) {
+        dispatch(updateSelectedSubtitleLang(defaultSubtitleLang));
+      }
+    }
+    //eslint-disable-next-line
+  }, []);
+
+  const handleUserMutedMic = useCallback(
+    (publication: TrackPublication) => {
+      if (!createdMediaStream) {
+        return;
+      }
+      if (publication.kind === Track.Kind.Audio) {
+        createdMediaStream.getAudioTracks().forEach((t) => {
+          t.enabled = !publication.isMuted;
+        });
+      }
+    },
+    [createdMediaStream],
+  );
+
+  // if we've an active mic for room + speech to text on
+  // sometime it make confused to user if they would like to mute/unmute
+  // so, we'll do the same if a user tries to mute/unmute their room mic
+  useEffect(() => {
+    currentRoom.localParticipant.on(
+      ParticipantEvent.TrackMuted,
+      handleUserMutedMic,
+    );
+    currentRoom.localParticipant.on(
+      ParticipantEvent.TrackUnmuted,
+      handleUserMutedMic,
+    );
+    return () => {
+      currentRoom.localParticipant.off(
+        ParticipantEvent.TrackMuted,
+        handleUserMutedMic,
+      );
+      currentRoom.localParticipant.off(
+        ParticipantEvent.TrackUnmuted,
+        handleUserMutedMic,
+      );
+    };
+    //eslint-disable-next-line
+  }, [createdMediaStream]);
 
   const unsetRecognizer = useCallback(() => {
     if (recognizer) {
@@ -66,13 +129,42 @@ const SpeechToTextService = ({ currentRoom }: SpeechToTextServiceProps) => {
   }, [recognizer]);
 
   useEffect(() => {
+    let interval: any = undefined;
+    if (recognizer) {
+      interval = setInterval(async () => {
+        const res = await renewAzureToken();
+        if (res && !res.status) {
+          toast(t(res.msg), {
+            type: 'error',
+          });
+        }
+      }, tokenRenewInterval);
+    }
+
     return () => {
       if (recognizer) {
         unsetRecognizer();
       }
+      if (interval) {
+        clearInterval(interval);
+      }
     };
     //eslint-disable-next-line
   }, [recognizer]);
+
+  // we'll update token
+  useEffect(() => {
+    if (
+      recognizer &&
+      azureTokenInfo &&
+      azureTokenInfo.renew &&
+      azureTokenInfo.token !== ''
+    ) {
+      recognizer.authorizationToken = azureTokenInfo.token;
+      dispatch(cleanAzureToken());
+    }
+    //eslint-disable-next-line
+  }, [recognizer, azureTokenInfo]);
 
   useEffect(() => {
     if (isEmpty(deviceId) && !mediaStream) {
@@ -99,25 +191,55 @@ const SpeechToTextService = ({ currentRoom }: SpeechToTextServiceProps) => {
     if (isEmpty(deviceId) && !mediaStream) {
       return;
     }
-    if (
-      speechService &&
-      azureTokenInfo &&
-      !isEmpty(azureTokenInfo) &&
-      !isEmpty(speechLang)
-    ) {
-      setOptionSelectionDisabled(true);
-      openConnectionWithAzure(
-        azureTokenInfo,
-        deviceId,
-        mediaStream,
-        speechLang,
-        speechService,
-        setOptionSelectionDisabled,
-        setRecognizer,
-        unsetRecognizer,
-      );
-      dispatch(updateAzureTokenInfo(undefined));
-    }
+    const startConnection = async () => {
+      if (
+        speechService &&
+        azureTokenInfo &&
+        !azureTokenInfo.renew &&
+        !isEmpty(azureTokenInfo.token) &&
+        !isEmpty(speechLang)
+      ) {
+        setOptionSelectionDisabled(true);
+        let mStream = mediaStream;
+        // we'll create media stream otherwise won't be able to mute audio stream
+        if (!isEmpty(deviceId) && !mediaStream) {
+          // use livekit track creation method for simplicity
+          const m = await currentRoom.localParticipant.createTracks({
+            audio: {
+              deviceId,
+            },
+            video: false,
+          });
+          mStream = m[0].mediaStream;
+        }
+        setCreatedMediaStream(mStream);
+
+        // for the beginning, we'll check if our room mic is muted or not
+        if (currentRoom.localParticipant.audioTracks.size) {
+          currentRoom.localParticipant.audioTracks.forEach((t) => {
+            if (t.isMuted && mStream) {
+              mStream.getAudioTracks().forEach((t) => {
+                if (t.enabled) {
+                  t.enabled = false;
+                }
+              });
+            }
+          });
+        }
+
+        openConnectionWithAzure(
+          azureTokenInfo,
+          mStream,
+          speechLang,
+          speechService,
+          setOptionSelectionDisabled,
+          setRecognizer,
+          unsetRecognizer,
+        );
+        dispatch(cleanAzureToken());
+      }
+    };
+    startConnection();
     //eslint-disable-next-line
   }, [azureTokenInfo, deviceId, mediaStream, speechLang, speechService]);
 
@@ -131,6 +253,7 @@ const SpeechToTextService = ({ currentRoom }: SpeechToTextServiceProps) => {
       if (!isEmpty(o.micDevice)) {
         setDeviceId(o.micDevice);
         setMediaStream(undefined);
+        setCreatedMediaStream(undefined);
       } else {
         currentRoom.localParticipant.audioTracks.forEach((publication) => {
           if (
@@ -147,6 +270,7 @@ const SpeechToTextService = ({ currentRoom }: SpeechToTextServiceProps) => {
         setSpeechLang('');
         setDeviceId('');
         setMediaStream(undefined);
+        setCreatedMediaStream(undefined);
       }
     },
     //eslint-disable-next-line
@@ -157,6 +281,7 @@ const SpeechToTextService = ({ currentRoom }: SpeechToTextServiceProps) => {
     setSpeechLang('');
     setDeviceId('');
     setMediaStream(undefined);
+    setCreatedMediaStream(undefined);
   };
 
   return (

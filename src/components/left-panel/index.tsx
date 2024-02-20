@@ -13,8 +13,8 @@ import MyBreakoutRooms from '../breakout-room/my/myBreakoutRooms';
 import { updateIsActiveParticipantsPanel } from '../../store/slices/bottomIconsActivitySlice';
 
 const selectedTabLeftPanelSelector = createSelector(
-  (state: RootState) => state.roomSettings.selectedTabLeftPanel,
-  (isActiveChatPanel) => isActiveChatPanel,
+  (state: RootState) => state.roomSettings,
+  (roomSettings) => roomSettings.selectedTabLeftPanel,
 );
 
 const LeftPanel = () => {
@@ -42,7 +42,7 @@ const LeftPanel = () => {
           <>
             {t('left-panel.polls-tab')}
             {total_running > 0 ? (
-              <span className="absolute -right-[20px] -top-[7px] w-5 h-5 bg-primaryColor rounded-full text-white text-[10px]">
+              <span className="absolute ltr:-right-5 rtl:-left-5 -top-[7px] w-5 h-5 bg-primaryColor rounded-full text-white text-[10px]">
                 {total_running ?? 0}
               </span>
             ) : null}

@@ -19,14 +19,13 @@ interface IMenuIconProps {
 }
 
 const defaultLockSettingsSelector = createSelector(
-  (state: RootState) =>
-    state.session.currentRoom.metadata?.default_lock_settings,
-  (default_lock_settings) => default_lock_settings,
+  (state: RootState) => state.session.currentRoom.metadata,
+  (metadata) => metadata?.default_lock_settings,
 );
 
 const currentUserLockSettingsSelector = createSelector(
-  (state: RootState) => state.session.currentUser?.metadata?.lock_settings,
-  (lock_settings) => lock_settings,
+  (state: RootState) => state.session.currentUser?.metadata,
+  (metadata) => metadata?.lock_settings,
 );
 
 const MenuIcon = ({
@@ -104,7 +103,7 @@ const MenuIcon = ({
                 {/* Mark this component as `static` */}
                 <Menu.Items
                   static
-                  className="origin-top-right z-10 absolute right-0 mt-2 w-44 rounded-md shadow-lg bg-white dark:bg-darkPrimary ring-1 ring-black dark:ring-secondaryColor ring-opacity-5 divide-y divide-gray-100 dark:divide-secondaryColor focus:outline-none"
+                  className="origin-top-right z-10 absolute ltr:right-0 rtl:left-0 mt-2 w-44 rounded-md shadow-lg bg-white dark:bg-darkPrimary ring-1 ring-black dark:ring-secondaryColor ring-opacity-5 divide-y divide-gray-100 dark:divide-secondaryColor focus:outline-none"
                 >
                   {renderMenuItems()}
                 </Menu.Items>

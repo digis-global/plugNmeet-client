@@ -48,26 +48,22 @@ interface WhiteboardProps {
   onReadyExcalidrawAPI: (excalidrawAPI: ExcalidrawImperativeAPI) => void;
 }
 
-const whiteboardSelector = createSelector(
-  (state: RootState) => state.whiteboard,
-  (whiteboard) => whiteboard,
-);
+const whiteboardSelector = (state: RootState) => state.whiteboard;
 const lockWhiteboardSelector = createSelector(
-  (state: RootState) =>
-    state.session.currentUser?.metadata?.lock_settings?.lock_whiteboard,
-  (lock_whiteboard) => lock_whiteboard,
+  (state: RootState) => state.session.currentUser?.metadata?.lock_settings,
+  (lock_settings) => lock_settings?.lock_whiteboard,
 );
 const isPresenterSelector = createSelector(
-  (state: RootState) => state.session.currentUser?.metadata?.is_presenter,
-  (is_presenter) => is_presenter,
+  (state: RootState) => state.session.currentUser?.metadata,
+  (metadata) => metadata?.is_presenter,
 );
 const themeSelector = createSelector(
-  (state: RootState) => state.roomSettings.theme,
-  (theme) => theme,
+  (state: RootState) => state.roomSettings,
+  (roomSettings) => roomSettings.theme,
 );
 const screenWidthSelector = createSelector(
-  (state: RootState) => state.bottomIconsActivity.screenWidth,
-  (screenWidth) => screenWidth,
+  (state: RootState) => state.bottomIconsActivity,
+  (bottomIconsActivity) => bottomIconsActivity.screenWidth,
 );
 
 const Whiteboard = ({ onReadyExcalidrawAPI }: WhiteboardProps) => {
@@ -497,12 +493,10 @@ const Whiteboard = ({ onReadyExcalidrawAPI }: WhiteboardProps) => {
     );
   };
 
-  const handleOnReadyExcalidrawRef = (
-    value: ExcalidrawImperativeAPI | null,
-  ) => {
-    if (value) {
-      excalidrawRefCallback(value);
-      onReadyExcalidrawAPI(value);
+  const handleOnReadyExcalidrawRef = (api: ExcalidrawImperativeAPI) => {
+    if (api) {
+      excalidrawRefCallback(api);
+      onReadyExcalidrawAPI(api);
     }
   };
 
@@ -510,7 +504,9 @@ const Whiteboard = ({ onReadyExcalidrawAPI }: WhiteboardProps) => {
     <>
       <div className="excalidraw-wrapper flex-1 w-full max-w-[1200px] m-auto h-[calc(100%-50px)] sm:px-5 mt-9 z-[0]">
         <Excalidraw
-          ref={handleOnReadyExcalidrawRef}
+          excalidrawAPI={(api: ExcalidrawImperativeAPI) =>
+            handleOnReadyExcalidrawRef(api)
+          }
           onChange={onChange}
           onPointerUpdate={onPointerUpdate}
           viewModeEnabled={viewModeEnabled}
@@ -522,6 +518,9 @@ const Whiteboard = ({ onReadyExcalidrawAPI }: WhiteboardProps) => {
               loadScene: false,
               export: false,
               saveAsImage: !currentUser?.isRecorder,
+            },
+            tools: {
+              image: false,
             },
           }}
           autoFocus={true}

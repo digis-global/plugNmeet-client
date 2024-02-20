@@ -12,13 +12,13 @@ import { updateIsActiveChatPanel } from '../../../store/slices/bottomIconsActivi
 import { IRoomMetadata } from '../../../store/slices/interfaces/session';
 
 const isActiveChatPanelSelector = createSelector(
-  (state: RootState) => state.bottomIconsActivity.isActiveChatPanel,
-  (isActiveChatPanel) => isActiveChatPanel,
+  (state: RootState) => state.bottomIconsActivity,
+  (bottomIconsActivity) => bottomIconsActivity.isActiveChatPanel,
 );
 
 const totalUnreadChatMsgsSelector = createSelector(
-  (state: RootState) => state.bottomIconsActivity.totalUnreadChatMsgs,
-  (totalUnreadChatMsgs) => totalUnreadChatMsgs,
+  (state: RootState) => state.bottomIconsActivity,
+  (bottomIconsActivity) => bottomIconsActivity.totalUnreadChatMsgs,
 );
 
 const ChatIcon = () => {
@@ -55,7 +55,7 @@ const ChatIcon = () => {
   const render = () => {
     return (
       <div
-        className={`message footer-icon h-[35px] lg:h-[40px] w-[35px] lg:w-[40px] relative rounded-full bg-[#F2F2F2] dark:bg-darkSecondary2 hover:bg-[#ECF4FF] mr-3 lg:mr-6 flex items-center justify-center cursor-pointer ${
+        className={`message footer-icon h-[35px] lg:h-[40px] w-[35px] lg:w-[40px] relative rounded-full bg-[#F2F2F2] dark:bg-darkSecondary2 hover:bg-[#ECF4FF] ltr:mr-3 lg:ltr:mr-6 rtl:ml-3 lg:rtl:ml-6 flex items-center justify-center cursor-pointer ${
           showTooltip ? 'has-tooltip' : ''
         }`}
         onClick={() => toggleChatPanel()}

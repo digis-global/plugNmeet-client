@@ -16,8 +16,8 @@ interface IRecordingIconProps {
 }
 
 const isRecordingSelector = createSelector(
-  (state: RootState) => state.session.isActiveRecording,
-  (is_recording) => is_recording,
+  (state: RootState) => state.session,
+  (session) => session.isActiveRecording,
 );
 const RecordingIcon = ({ currentRoom }: IRecordingIconProps) => {
   const showTooltip = store.getState().session.userDeviceType === 'desktop';
@@ -224,7 +224,7 @@ const RecordingIcon = ({ currentRoom }: IRecordingIconProps) => {
         <button
           className={`${
             isRecording ? 'record' : ''
-          } footer-icon h-[35px] lg:h-[40px] w-[35px] lg:w-[40px] overflow-hidden rounded-full bg-[#F2F2F2] dark:bg-darkSecondary2 hover:bg-[#ECF4FF] mr-3 lg:mr-6 flex items-center justify-center cursor-pointer ${
+          } footer-icon h-[35px] lg:h-[40px] w-[35px] lg:w-[40px] overflow-hidden rounded-full bg-[#F2F2F2] dark:bg-darkSecondary2 hover:bg-[#ECF4FF] ltr:mr-3 lg:ltr:mr-6 rtl:ml-3 lg:rtl:ml-6 flex items-center justify-center cursor-pointer ${
             showTooltip ? 'has-tooltip' : ''
           }`}
           onClick={() => onClickRecordingBtn()}

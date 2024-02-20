@@ -29,6 +29,10 @@ window.DEFAULT_WEBCAM_RESOLUTION = 'h720';
 // Default: h1080fps15
 window.DEFAULT_SCREEN_SHARE_RESOLUTION = 'h1080fps15';
 
+// Available options: 'telephone' | 'speech' | 'music' | 'musicStereo' | 'musicHighQuality' | 'musicHighQualityStereo'.
+// Default: music
+window.DEFAULT_AUDIO_PRESET = 'music';
+
 //For local tracks, stop the underlying MediaStreamTrack when the track is muted (or paused) on some platforms, this option is necessary to disable the microphone recording indicator. Note: when this is enabled, and BT devices are connected, they will transition between profiles (e.g. HFP to A2DP) and there will be an audible difference in playback.
 window.STOP_MIC_TRACK_ON_MUTE = true;
 
@@ -42,10 +46,18 @@ window.DESIGN_CUSTOMIZATION = `{
 
 // Whiteboard PreloadedLibraryItems which should an array of full library direct URL
 // You can get items from here: https://libraries.excalidraw.com
-// window.WHITEBOARD_PRELOADED_LIBRARY_ITEMS = [
-//   'https://libraries.excalidraw.com/libraries/BjoernKW/UML-ER-library.excalidrawlib',
-//   'https://libraries.excalidraw.com/libraries/aretecode/decision-flow-control.excalidrawlib',
-//   'https://libraries.excalidraw.com/libraries/dbssticky/data-viz.excalidrawlib',
-//   'https://libraries.excalidraw.com/libraries/pgilfernandez/basic-shapes.excalidrawlib',
-//   'https://libraries.excalidraw.com/libraries/ocapraro/bubbles.excalidrawlib',
-// ];
+/*window.WHITEBOARD_PRELOADED_LIBRARY_ITEMS = [
+  'https://libraries.excalidraw.com/libraries/BjoernKW/UML-ER-library.excalidrawlib',
+  'https://libraries.excalidraw.com/libraries/aretecode/decision-flow-control.excalidrawlib',
+  'https://libraries.excalidraw.com/libraries/dbssticky/data-viz.excalidrawlib',
+  'https://libraries.excalidraw.com/libraries/pgilfernandez/basic-shapes.excalidrawlib',
+  'https://libraries.excalidraw.com/libraries/ocapraro/bubbles.excalidrawlib',
+];*/
+
+// You can set default virtual background images here,
+// make sure that you're using direct https links otherwise file may not be loaded
+/*window.PNM_VIRTUAL_BG_IMGS = [
+  'https://www.example.com/vb_bg/image1.png',
+  'https://www.example.com/vb_bg/image2.png',
+  'https://www.example.com/vb_bg/image3.png',
+];*/

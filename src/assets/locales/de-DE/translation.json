@@ -58,6 +58,8 @@
   "header": {
     "hide-header": "Hide header",
     "show-header": "Show header",
+    "room-audio-volume": "Room audio",
+    "room-screen-share-audio-volume": "Room screen share audio",
     "menus": {
       "settings": "Einstellungen",
       "keyboard-shortcuts": "Tastaturkürzel",
@@ -285,7 +287,8 @@
       "external-media-player-upload-file": "Upload",
       "external-media-player-upload-file-play": "Hochladen und abspielen",
       "external-media-player-upload-supported-files": "Unterstützte Dateien: {{files}}",
-      "upload-background-image": "Hintergrundbild hochladen"
+      "upload-background-image": "Hintergrundbild hochladen",
+      "shared-notepad": "Shared notepad"
     }
   },
   "whiteboard": {
@@ -383,20 +386,25 @@
     "user-role-des": "Aktuelle Rolle des Benutzers. Entweder Administrator oder Teilnehmer"
   },
   "ingress-features": {
+    "ingress-type": "Ingress type",
+    "ingress-type-rtmp": "RTMP",
+    "ingress-type-whip": "WHIP",
     "join-as-name": "Join as name",
     "feature-not-allow": "Feature not allow",
     "join-as-name-required": "Join as name required",
     "gen-link": "Generate link",
-    "rtmp-url": "RTMP Host/URL",
-    "rtmp-key": "RTMP key/secret"
+    "stream-url": "Stream Host/URL",
+    "stream-key": "Stream key/secret"
   },
   "speech-services": {
     "modal-settings-title": "Speech to text/translation settings",
     "enable-speech-to-text": "Enable speech to text",
     "speech-langs-label": "Speech languages",
     "speech-users-label": "Speech users",
+    "subtitle-font-size": "Subtitle font size",
     "enable-translation": "Enable translation",
     "translation-langs-label": "Translation languages",
+    "default-subtitle-lang-label": "Default subtitle language",
     "enable-service": "Enable service",
     "speech-user-required": "At least one speech user require",
     "speech-lang-required": "At least one speech language require",

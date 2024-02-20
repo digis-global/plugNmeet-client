@@ -25,17 +25,16 @@ interface IScrenshareIconProps {
 }
 
 const isActiveScreenshareSelector = createSelector(
-  (state: RootState) => state.bottomIconsActivity.isActiveScreenshare,
-  (isActiveScreenshare) => isActiveScreenshare,
+  (state: RootState) => state.bottomIconsActivity,
+  (bottomIconsActivity) => bottomIconsActivity.isActiveScreenshare,
 );
 const sessionScreenSharingSelector = createSelector(
-  (state: RootState) => state.session.screenSharing,
-  (screenSharing) => screenSharing,
+  (state: RootState) => state.session,
+  (session) => session.screenSharing,
 );
 const isScreenshareLockSelector = createSelector(
-  (state: RootState) =>
-    state.session.currentUser?.metadata?.lock_settings.lock_screen_sharing,
-  (lock_screen_sharing) => lock_screen_sharing,
+  (state: RootState) => state.session.currentUser?.metadata?.lock_settings,
+  (lock_settings) => lock_settings?.lock_screen_sharing,
 );
 
 const ScrenshareIcon = ({ currentRoom }: IScrenshareIconProps) => {
@@ -176,7 +175,7 @@ const ScrenshareIcon = ({ currentRoom }: IScrenshareIconProps) => {
   const render = () => {
     return (
       <div
-        className={`share-screen footer-icon h-[35px] lg:h-[40px] w-[35px] lg:w-[40px] relative rounded-full bg-[#F2F2F2] dark:bg-darkSecondary2 hover:bg-[#ECF4FF] mr-3 lg:mr-6 hidden md:flex items-center justify-center cursor-pointer ${
+        className={`share-screen footer-icon h-[35px] lg:h-[40px] w-[35px] lg:w-[40px] relative rounded-full bg-[#F2F2F2] dark:bg-darkSecondary2 hover:bg-[#ECF4FF] ltr:mr-3 lg:ltr:mr-6 rtl:ml-3 lg:rtl:ml-6 hidden md:flex items-center justify-center cursor-pointer ${
           showTooltip ? 'has-tooltip' : ''
         }`}
         onClick={() => toggleScreenShare()}

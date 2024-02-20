@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dialog, Transition } from '@headlessui/react';
+import { isEmpty } from 'lodash';
 import {
   SpeechRecognizer,
   TranslationRecognizer,
@@ -10,6 +11,7 @@ import { SpeechToTextTranslationFeatures } from '../../../store/slices/interface
 import { store } from '../../../store';
 import SpeechToTextLangElms from './speechToTextLangElms';
 import SubtitleLangElms from './subtitleLangElms';
+import SubtitleFontSize from './subtitleFontSize';
 
 interface SelectOptionsProps {
   optionSelectionDisabled: boolean;
@@ -42,6 +44,19 @@ const SelectOptions = ({
   const [selectedSpeechLang, setSelectedSpeechLang] = useState<string>('');
   const [selectedSubtitleLang, setSelectedSubtitleLang] = useState<string>('');
   const [selectedMicDevice, setSelectedMicDevice] = useState<string>('');
+
+  useEffect(() => {
+    const selectedSubtitleLang =
+      store.getState().speechServices.selectedSubtitleLang;
+    if (!isEmpty(selectedSubtitleLang)) {
+      setSelectedSubtitleLang(selectedSubtitleLang);
+    } else {
+      if (speechService.default_subtitle_lang) {
+        setSelectedSubtitleLang(speechService.default_subtitle_lang);
+      }
+    }
+    //eslint-disable-next-line
+  }, []);
 
   useEffect(() => {
     const haveUser = speechService.allowed_speech_users?.find(
@@ -118,7 +133,7 @@ const SelectOptions = ({
             >
               <div className="inline-block w-full max-w-lg p-6 my-8 overflow-[initial] text-left align-middle transition-all transform bg-white dark:bg-darkPrimary shadow-xl rounded-2xl">
                 <button
-                  className="close-btn absolute top-8 right-6 w-[25px] h-[25px] outline-none"
+                  className="close-btn absolute top-8 ltr:right-6 rtl:left-6 w-[25px] h-[25px] outline-none"
                   type="button"
                   onClick={() => setShowModal(false)}
                 >
@@ -128,7 +143,7 @@ const SelectOptions = ({
 
                 <Dialog.Title
                   as="h3"
-                  className="text-lg font-medium leading-6 text-gray-900 dark:text-white mb-2"
+                  className="text-lg font-medium leading-6 text-gray-900 dark:text-white mb-2 ltr:text-left rtl:text-right"
                 >
                   {t('speech-services.start-modal-title')}
                 </Dialog.Title>
@@ -149,6 +164,7 @@ const SelectOptions = ({
                     selectedSubtitleLang={selectedSubtitleLang}
                     setSelectedSubtitleLang={setSelectedSubtitleLang}
                   />
+                  <SubtitleFontSize />
                 </div>
                 <div className="pt-5 bg-gray-50 dark:bg-transparent text-right">
                   <>
@@ -185,10 +201,14 @@ const SelectOptions = ({
       {modalElm()}
       <button onClick={() => setShowModal(true)}>
         <div className="microphone footer-icon relative h-[35px] lg:h-[40px] w-[35px] lg:w-[40px] rounded-full bg-[#F2F2F2] dark:bg-darkSecondary2 hover:bg-[#ECF4FF] flex items-center justify-center cursor-pointer has-tooltip">
-          <span className="tooltip !-left-3 tooltip-left">
+          <span className="tooltip !-left-3 ltr:tooltip-left rtl:tooltip-right">
             {t('speech-services.subtitle-settings')}
           </span>
-          <i className="pnm-closed-captioning primaryColor dark:text-darkText text-[12px] lg:text-[14px]"></i>
+          <i
+            className={`pnm-closed-captioning dark:text-darkText text-[12px] lg:text-[14px] ${
+              showModal ? 'secondaryColor' : 'primaryColor'
+            }`}
+          ></i>
         </div>
       </button>
     </div>

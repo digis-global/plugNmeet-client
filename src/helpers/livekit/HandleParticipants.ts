@@ -17,8 +17,8 @@ import {
 } from '../../store/slices/participantSlice';
 import { ICurrentUserMetadata } from '../../store/slices/interfaces/session';
 import {
-  updateScreenSharing,
   updateCurrentUserMetadata,
+  updateScreenSharing,
 } from '../../store/slices/sessionSlice';
 import { IConnectLivekit } from './types';
 import {
@@ -32,6 +32,7 @@ import {
   AnalyticsEvents,
   AnalyticsEventType,
 } from '../proto/plugnmeet_analytics_pb';
+import languages from '../languages';
 
 export default class HandleParticipants {
   private that: IConnectLivekit;
@@ -39,6 +40,7 @@ export default class HandleParticipants {
   private participantsCount = 0;
   private participantCounterInterval: any = 0;
   private lastConnectionQuality: ConnectionQuality | undefined = undefined;
+  private preferredLang = '';
 
   constructor(that: IConnectLivekit) {
     this.that = that;
@@ -194,7 +196,10 @@ export default class HandleParticipants {
       }),
     );
 
-    if (connectionQuality === ConnectionQuality.Poor) {
+    if (
+      connectionQuality === ConnectionQuality.Poor ||
+      connectionQuality === ConnectionQuality.Lost
+    ) {
       if (
         participant.sid === this.that.room.localParticipant.sid &&
         !(
@@ -202,7 +207,11 @@ export default class HandleParticipants {
           participant.identity === 'RTMP_BOT'
         )
       ) {
-        toast(i18n.t('notifications.your-connection-quality-not-good'), {
+        let msg = i18n.t('notifications.your-connection-quality-not-good');
+        if (connectionQuality === ConnectionQuality.Lost) {
+          msg = i18n.t('notifications.your-connection-quality-lost');
+        }
+        toast(msg, {
           toastId: 'connection-status',
           type: 'error',
         });
@@ -223,7 +232,7 @@ export default class HandleParticipants {
     }
   };
 
-  public setParticipantMetadata = (
+  public setParticipantMetadata = async (
     _: string | undefined,
     participant: Participant,
   ) => {
@@ -239,6 +248,24 @@ export default class HandleParticipants {
       );
 
       if (this.that.room.localParticipant.sid === participant.sid) {
+        if (
+          this.preferredLang === '' &&
+          typeof metadata.preferred_lang !== 'undefined' &&
+          metadata.preferred_lang !== ''
+        ) {
+          this.preferredLang = metadata.preferred_lang;
+          for (let i = 0; i < languages.length; i++) {
+            const lan = languages[i];
+            if (
+              lan.code.toLowerCase() === metadata.preferred_lang.toLowerCase()
+            ) {
+              // we'll only change if we've found the right language
+              await i18n.changeLanguage(lan.code);
+              break;
+            }
+          }
+        }
+
         store.dispatch(updateCurrentUserMetadata(metadata));
         store.dispatch(updateIsActiveRaisehand(metadata.raised_hand));
       }

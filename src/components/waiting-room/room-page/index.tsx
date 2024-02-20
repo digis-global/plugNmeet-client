@@ -8,9 +8,8 @@ import Logo from './logo';
 
 const waitingRoomMessageSelector = createSelector(
   (state: RootState) =>
-    state.session.currentRoom.metadata?.room_features.waiting_room_features
-      .waiting_room_msg,
-  (waiting_room_msg) => waiting_room_msg,
+    state.session.currentRoom.metadata?.room_features.waiting_room_features,
+  (waiting_room_features) => waiting_room_features?.waiting_room_msg,
 );
 
 const WaitingRoomPage = () => {
@@ -27,7 +26,7 @@ const WaitingRoomPage = () => {
         }}
       >
         <div className="waiting-room-inner relative z-10">
-          <div className="logo w-40 m-auto relative z-20">
+          <div className="logo w-full m-auto relative z-20">
             <Logo />
           </div>
           <div className="divider my-5 h-[2px] w-full max-w-[50px] bg-primaryColor dark:bg-darkText m-auto"></div>

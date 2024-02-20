@@ -27,25 +27,24 @@ interface IWebcamIconProps {
 }
 
 const isActiveWebcamPanelSelector = createSelector(
-  (state: RootState) => state.bottomIconsActivity.isActiveWebcam,
-  (isActiveWebcam) => isActiveWebcam,
+  (state: RootState) => state.bottomIconsActivity,
+  (bottomIconsActivity) => bottomIconsActivity.isActiveWebcam,
 );
 const showVideoShareModalSelector = createSelector(
-  (state: RootState) => state.bottomIconsActivity.showVideoShareModal,
-  (showVideoShareModal) => showVideoShareModal,
+  (state: RootState) => state.bottomIconsActivity,
+  (bottomIconsActivity) => bottomIconsActivity.showVideoShareModal,
 );
 const isWebcamLockSelector = createSelector(
-  (state: RootState) =>
-    state.session.currentUser?.metadata?.lock_settings.lock_webcam,
-  (lock_webcam) => lock_webcam,
+  (state: RootState) => state.session.currentUser?.metadata?.lock_settings,
+  (lock_settings) => lock_settings?.lock_webcam,
 );
 const virtualBackgroundSelector = createSelector(
-  (state: RootState) => state.bottomIconsActivity.virtualBackground,
-  (virtualBackground) => virtualBackground,
+  (state: RootState) => state.bottomIconsActivity,
+  (bottomIconsActivity) => bottomIconsActivity.virtualBackground,
 );
 const selectedVideoDeviceSelector = createSelector(
-  (state: RootState) => state.roomSettings.selectedVideoDevice,
-  (selectedVideoDevice) => selectedVideoDevice,
+  (state: RootState) => state.roomSettings,
+  (roomSettings) => roomSettings.selectedVideoDevice,
 );
 
 const WebcamIcon = ({ currentRoom }: IWebcamIconProps) => {
@@ -296,7 +295,7 @@ const WebcamIcon = ({ currentRoom }: IWebcamIconProps) => {
     return (
       <div className="relative z-10">
         <div
-          className={`camera footer-icon relative h-[35px] lg:h-[40px] w-[35px] lg:w-[40px] rounded-full bg-[#F2F2F2] dark:bg-darkSecondary2 hover:bg-[#ECF4FF] mr-3 lg:mr-6 flex items-center justify-center cursor-pointer ${
+          className={`camera footer-icon relative h-[35px] lg:h-[40px] w-[35px] lg:w-[40px] rounded-full bg-[#F2F2F2] dark:bg-darkSecondary2 hover:bg-[#ECF4FF] ltr:mr-3 lg:ltr:mr-6 rtl:ml-3 lg:rtl:ml-6 flex items-center justify-center cursor-pointer ${
             showTooltip ? 'has-tooltip' : ''
           }`}
           onClick={() => toggleWebcam()}

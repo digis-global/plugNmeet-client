@@ -1,3 +1,6 @@
+import { store } from '../../../store';
+import i18n from '../../../helpers/i18n';
+
 export type SupportedLangs = {
   name: string;
   code: string;
@@ -250,4 +253,64 @@ const supportedTranslationLangs = [
   { name: 'Yucatec Maya	', code: 'yua' },
 ];
 
-export { supportedSpeechToTextLangs, supportedTranslationLangs };
+const getSubtitleLangs = (
+  speechLangs?: string[],
+  transLangs?: string[],
+): Array<SupportedLangs> => {
+  if (!speechLangs || !transLangs) {
+    const speechService =
+      store.getState().session.currentRoom.metadata?.room_features
+        .speech_to_text_translation_features;
+    if (!speechLangs) {
+      speechLangs = speechService?.allowed_speech_langs;
+    }
+    if (!transLangs) {
+      transLangs = speechService?.allowed_trans_langs;
+    }
+  }
+
+  const langs: Array<SupportedLangs> = [
+    {
+      name: i18n.t('speech-services.select-one-lang'),
+      code: '',
+    },
+  ];
+
+  if (speechLangs) {
+    for (let i = 0; i < speechLangs.length; i++) {
+      const l = speechLangs[i];
+      const r = supportedSpeechToTextLangs.filter((lang) => lang.code === l);
+      if (!r.length) {
+        continue;
+      }
+      const find = langs.find((ll) => ll.code === r[0].locale);
+      if (!find) {
+        const obj = supportedTranslationLangs.filter(
+          (lang) => lang.code === r[0].locale,
+        );
+        langs.push(...obj);
+      }
+    }
+  }
+  if (transLangs) {
+    for (let i = 0; i < transLangs.length; i++) {
+      const l = transLangs[i];
+      const r = supportedTranslationLangs.filter((lang) => lang.code === l);
+      if (!r.length) {
+        continue;
+      }
+      const find = langs.find((ll) => ll.code === r[0].code);
+      if (!find) {
+        langs.push(...r);
+      }
+    }
+  }
+
+  return langs;
+};
+
+export {
+  supportedSpeechToTextLangs,
+  supportedTranslationLangs,
+  getSubtitleLangs,
+};
