@@ -1,4 +1,4 @@
-window.PLUG_N_MEET_SERVER_URL = 'https://dev-dkyc.digis.lk';
+window.PLUG_N_MEET_SERVER_URL = 'https://dev-ekyc.digis.lk';
 
 // this is helpful for external plugin development where images or other files located
 // in other place.
